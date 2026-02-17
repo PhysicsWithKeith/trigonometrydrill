@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trig Master - Physics with Keith</title>
+    <title>Trigonometry Drill - Physics with Keith</title>
     <style>
         /* Import a distinctive, playful yet readable font combination */
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap');
@@ -455,8 +455,8 @@
     <div id="gameContainer">
         <!-- Intro Screen -->
         <div id="introScreen" class="screen active">
-            <h1>🔺 Trig Master 🔺</h1>
-            <div class="subtitle">Master Sine, Cosine & Tangent!</div>
+            <h1>🔺 Trigonometry Drill 🔺</h1>
+            <div class="subtitle">Physics With Keith</div>
             
             <div class="rules">
                 <h2>How to Play:</h2>
@@ -479,7 +479,7 @@
         <div id="gameScreen" class="screen">
             <div class="game-header">
                 <div class="score-display">Score: <span id="scoreValue">0</span></div>
-                <div class="timer-display" id="timer">15:00</div>
+                <div class="timer-display" id="timer">5:00</div>
                 <button class="btn-secondary btn-small" onclick="endGame()">End Early</button>
             </div>
             
@@ -545,7 +545,7 @@
             attemptsLeft: 3,
             gameStartTime: null,
             timerInterval: null,
-            timeLeft: 900 // 15 minutes in seconds
+            timeLeft: 300 // 5 minutes in seconds
         };
         
         // ===== UTILITY FUNCTIONS =====
@@ -650,37 +650,37 @@
                 // tan(angle) = opposite/adjacent => adjacent = opposite/tan(angle)
                 answer = givenLength / Math.tan(angleRad);
                 trigFunction = 'tangent';
-                hint1 = `Think about TOA: tan(θ) = Opposite / Adjacent`;
+                hint1 = `Think about tan(θ) = Opposite / Adjacent`;
                 hint2 = `Rearrange: Adjacent = Opposite / tan(${givenAngle}°)`;
             } else if (givenSide === 'opposite' && findSide === 'hypotenuse') {
                 // sin(angle) = opposite/hypotenuse => hypotenuse = opposite/sin(angle)
                 answer = givenLength / Math.sin(angleRad);
                 trigFunction = 'sine';
-                hint1 = `Think about SOH: sin(θ) = Opposite / Hypotenuse`;
+                hint1 = `Think about sin(θ) = Opposite / Hypotenuse`;
                 hint2 = `Rearrange: Hypotenuse = Opposite / sin(${givenAngle}°)`;
             } else if (givenSide === 'adjacent' && findSide === 'opposite') {
                 // tan(angle) = opposite/adjacent => opposite = adjacent × tan(angle)
                 answer = givenLength * Math.tan(angleRad);
                 trigFunction = 'tangent';
-                hint1 = `Think about TOA: tan(θ) = Opposite / Adjacent`;
+                hint1 = `Think about tan(θ) = Opposite / Adjacent`;
                 hint2 = `Rearrange: Opposite = Adjacent × tan(${givenAngle}°)`;
             } else if (givenSide === 'adjacent' && findSide === 'hypotenuse') {
                 // cos(angle) = adjacent/hypotenuse => hypotenuse = adjacent/cos(angle)
                 answer = givenLength / Math.cos(angleRad);
                 trigFunction = 'cosine';
-                hint1 = `Think about CAH: cos(θ) = Adjacent / Hypotenuse`;
+                hint1 = `Think about cos(θ) = Adjacent / Hypotenuse`;
                 hint2 = `Rearrange: Hypotenuse = Adjacent / cos(${givenAngle}°)`;
             } else if (givenSide === 'hypotenuse' && findSide === 'opposite') {
                 // sin(angle) = opposite/hypotenuse => opposite = hypotenuse × sin(angle)
                 answer = givenLength * Math.sin(angleRad);
                 trigFunction = 'sine';
-                hint1 = `Think about SOH: sin(θ) = Opposite / Hypotenuse`;
+                hint1 = `Think about sin(θ) = Opposite / Hypotenuse`;
                 hint2 = `Rearrange: Opposite = Hypotenuse × sin(${givenAngle}°)`;
             } else if (givenSide === 'hypotenuse' && findSide === 'adjacent') {
                 // cos(angle) = adjacent/hypotenuse => adjacent = hypotenuse × cos(angle)
                 answer = givenLength * Math.cos(angleRad);
                 trigFunction = 'cosine';
-                hint1 = `Think about CAH: cos(θ) = Adjacent / Hypotenuse`;
+                hint1 = `Think about cos(θ) = Adjacent / Hypotenuse`;
                 hint2 = `Rearrange: Adjacent = Hypotenuse × cos(${givenAngle}°)`;
             }
             
@@ -1033,7 +1033,7 @@
                                 gameState.currentQuestion.findSide.slice(1);
                 questionText.textContent = `Find the length of the ${sideName.toLowerCase()} side.`;
             } else {
-                questionText.textContent = `Find the angle θ (theta).`;
+                questionText.textContent = `Find the angle (θ, theta).`;
             }
             
             // Set unit label
