@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trig Master - Physics with Keith</title>
+    <style>
+        /* Import a distinctive, playful yet readable font combination */
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap');
+        
+        :root {
+            /* Vibrant, energetic color scheme inspired by science labs */
+            --primary: #FF6B35;
+            --secondary: #004E89;
+            --accent: #F7B801;
+            --success: #06D6A0;
+            --error: #EF476F;
+            --bg-dark: #1A1A2E;
+            --bg-light: #16213E;
+            --text-light: #FFFFFF;
+            --text-dim: #B8C5D6;
+            --canvas-bg: #FFFFFF;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-light) 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                radial-gradient(circle, rgba(247, 184, 1, 0.1) 1px, transparent 1px),
+                radial-gradient(circle, rgba(6, 214, 160, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px, 80px 80px;
+            background-position: 0 0, 25px 25px;
+            animation: float 20s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes float {
+            from { transform: translate(0, 0); }
+            to { transform: translate(-50px, -50px); }
+        }
+        
+        #gameContainer {
+            position: relative;
+            width: 95vw;
+            max-width: 1200px;
+            height: 95vh;
+            max-height: 800px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Screen containers */
+        .screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .screen.active {
+            display: flex;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        /* Intro Screen */
+        #introScreen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: var(--text-dim);
+            margin-bottom: 40px;
+        }
+        
+        .rules {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 700px;
+            text-align: left;
+            margin-bottom: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .rules h2 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .rules ul {
+            list-style: none;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+        
+        .rules li {
+            padding-left: 30px;
+            position: relative;
+            margin-bottom: 10px;
+        }
+        
+        .rules li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        /* Buttons */
+        button {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            padding: 18px 50px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.5);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #003d6b;
+            transform: translateY(-2px);
+        }
+        
+        .btn-small {
+            font-size: 1rem;
+            padding: 12px 30px;
+        }
+        
+        /* Game Screen */
+        #gameScreen {
+            justify-content: space-between;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .score-display {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: rgba(6, 214, 160, 0.2);
+            padding: 15px 30px;
+            border-radius: 15px;
+            border: 2px solid var(--success);
+        }
+        
+        .timer-display {
+            font-family: 'Space Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: rgba(247, 184, 1, 0.2);
+            padding: 15px 30px;
+            border-radius: 15px;
+            border: 2px solid var(--accent);
+        }
+        
+        .timer-display.warning {
+            color: var(--error);
+            border-color: var(--error);
+            background: rgba(239, 71, 111, 0.2);
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .game-content {
+            flex: 1;
+            display: flex;
+            gap: 30px;
+            min-height: 0;
+        }
+        
+        .triangle-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--canvas-bg);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+            min-height: 0;
+        }
+        
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        
+        .question-panel {
+            flex: 0 0 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Mobile: stack question panel below the diagram */
+        @media (max-width: 700px) {
+            body {
+                overflow-y: auto;
+                align-items: flex-start;
+            }
+            #gameContainer {
+                height: auto;
+                min-height: 100vh;
+                padding: 16px;
+                border-radius: 0;
+                border: none;
+            }
+            .game-header {
+                margin-bottom: 12px;
+            }
+            .score-display, .timer-display {
+                font-size: 1.1rem;
+                padding: 10px 16px;
+            }
+            .game-content {
+                flex-direction: column;
+                gap: 16px;
+                flex: none;
+            }
+            .triangle-container {
+                width: 100%;
+                aspect-ratio: 1 / 1;
+                flex: none;
+                min-height: unset;
+            }
+            canvas {
+                width: 100%;
+                height: 100%;
+            }
+            .question-panel {
+                flex: none;
+                width: 100%;
+            }
+        }
+        
+        .question-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .question-text {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .answer-input-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            padding: 15px 20px;
+            border: 3px solid var(--secondary);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--bg-dark);
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(247, 184, 1, 0.2);
+        }
+        
+        .unit-label {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            color: var(--text-dim);
+            pointer-events: none;
+        }
+        
+        .feedback {
+            min-height: 60px;
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            transition: all 0.3s ease;
+        }
+        
+        .feedback.success {
+            background: rgba(6, 214, 160, 0.2);
+            border: 2px solid var(--success);
+            color: var(--success);
+        }
+        
+        .feedback.error {
+            background: rgba(239, 71, 111, 0.2);
+            border: 2px solid var(--error);
+            color: var(--error);
+        }
+        
+        .feedback.hint {
+            background: rgba(247, 184, 1, 0.2);
+            border: 2px solid var(--accent);
+            color: var(--accent);
+        }
+        
+        .attempts-remaining {
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            margin-top: 10px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .button-group button {
+            flex: 1;
+        }
+        
+        /* End Screen */
+        #endScreen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .final-score {
+            font-size: 6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--success), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+        
+        .stats {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            margin-bottom: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .stat-label {
+            color: var(--text-dim);
+        }
+        
+        .stat-value {
+            font-weight: 700;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <!-- Intro Screen -->
+        <div id="introScreen" class="screen active">
+            <h1>🔺 Trig Master 🔺</h1>
+            <div class="subtitle">Master Sine, Cosine & Tangent!</div>
+            
+            <div class="rules">
+                <h2>How to Play:</h2>
+                <ul>
+                    <li>You have 15 minutes to solve as many trig problems as possible</li>
+                    <li>Each question shows a right-angled triangle</li>
+                    <li>You'll be given some measurements and asked to find a missing side or angle</li>
+                    <li>Decide whether to use sine, cosine, or tangent</li>
+                    <li>Enter your answer in the text box (units are shown)</li>
+                    <li>Press ENTER to submit your answer</li>
+                    <li>You get 3 attempts per question with hints after each wrong answer</li>
+                    <li>Angles are in degrees, and answers are checked to 2 significant figures</li>
+                </ul>
+            </div>
+            
+            <button class="btn-primary" onclick="startGame()">Start Game</button>
+        </div>
+        
+        <!-- Game Screen -->
+        <div id="gameScreen" class="screen">
+            <div class="game-header">
+                <div class="score-display">Score: <span id="scoreValue">0</span></div>
+                <div class="timer-display" id="timer">15:00</div>
+                <button class="btn-secondary btn-small" onclick="endGame()">End Early</button>
+            </div>
+            
+            <div class="game-content">
+                <div class="triangle-container">
+                    <canvas id="triangleCanvas" width="500" height="500"></canvas>
+                </div>
+                
+                <div class="question-panel">
+                    <div class="question-box">
+                        <div class="question-text" id="questionText"></div>
+                        
+                        <div class="answer-input-container">
+                            <input type="text" id="answerInput" placeholder="Enter your answer">
+                            <span class="unit-label" id="unitLabel"></span>
+                        </div>
+                        
+                        <div class="feedback" id="feedback"></div>
+                        
+                        <div class="attempts-remaining" id="attemptsInfo"></div>
+                        
+                        <div class="button-group">
+                            <button class="btn-primary" id="submitBtn" onclick="checkAnswer()">Submit</button>
+                            <button class="btn-secondary" id="nextBtn" onclick="nextQuestion()" style="display: none;">Next Question</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- End Screen -->
+        <div id="endScreen" class="screen">
+            <h1>Game Over!</h1>
+            
+            <div class="final-score" id="finalScore">0</div>
+            
+            <div class="stats">
+                <div class="stat-row">
+                    <span class="stat-label">Questions Attempted:</span>
+                    <span class="stat-value" id="questionsAttempted">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Correct Answers:</span>
+                    <span class="stat-value" id="correctAnswers">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Accuracy:</span>
+                    <span class="stat-value" id="accuracy">0%</span>
+                </div>
+            </div>
+            
+            <button class="btn-primary" onclick="resetGame()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== GAME STATE =====
+        let gameState = {
+            score: 0,
+            questionsAttempted: 0,
+            correctAnswers: 0,
+            currentQuestion: null,
+            attemptsLeft: 3,
+            gameStartTime: null,
+            timerInterval: null,
+            timeLeft: 900 // 15 minutes in seconds
+        };
+        
+        // ===== UTILITY FUNCTIONS =====
+        
+        /**
+         * Round a number to n significant figures
+         */
+        function toSigFigs(num, sigFigs) {
+            if (num === 0) return 0;
+            const magnitude = Math.floor(Math.log10(Math.abs(num)));
+            const scale = Math.pow(10, sigFigs - magnitude - 1);
+            return Math.round(num * scale) / scale;
+        }
+        
+        /**
+         * Check if the answer is correct within tolerance
+         * Allows exact match at 2sf, or if 2nd significant figure is one digit away
+         */
+        function isAnswerCorrect(userAnswer, correctAnswer) {
+            // Round both to 2 significant figures
+            const user2sf = toSigFigs(userAnswer, 2);
+            const correct2sf = toSigFigs(correctAnswer, 2);
+            
+            // Check exact match at 2sf
+            if (user2sf === correct2sf) return true;
+            
+            // Check if second significant figure is one digit away
+            // Get the magnitude of the correct answer
+            if (correctAnswer === 0) return userAnswer === 0;
+            
+            const magnitude = Math.floor(Math.log10(Math.abs(correctAnswer)));
+            const scale = Math.pow(10, magnitude - 1); // Scale for 2nd sig fig
+            
+            // Get the second significant figure of each
+            const userDigit = Math.floor(Math.abs(user2sf) / scale) % 10;
+            const correctDigit = Math.floor(Math.abs(correct2sf) / scale) % 10;
+            
+            // Check if they're one digit apart and same sign
+            const digitDiff = Math.abs(userDigit - correctDigit);
+            const sameSign = (userAnswer >= 0) === (correctAnswer >= 0);
+            
+            return digitDiff <= 1 && sameSign;
+        }
+        
+        /**
+         * Generate a random integer between min and max (inclusive)
+         */
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        
+        /**
+         * Generate a random number between min and max
+         */
+        function randomFloat(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+        
+        // ===== QUESTION GENERATION =====
+        
+        /**
+         * Generate a random trig question
+         * Returns an object with question details
+         */
+        function generateQuestion() {
+            const questionTypes = ['findSide', 'findAngle'];
+            const questionType = questionTypes[randomInt(0, 1)];
+            
+            if (questionType === 'findSide') {
+                return generateFindSideQuestion();
+            } else {
+                return generateFindAngleQuestion();
+            }
+        }
+        
+        /**
+         * Generate a question where student finds a missing side
+         * Given: one side and one angle (not the right angle)
+         * Find: another side
+         */
+        function generateFindSideQuestion() {
+            // Generate a random angle (not 90°) between 20° and 70°
+            const givenAngle = randomInt(20, 70);
+            
+            // Decide which side is given and which is asked
+            const sideOptions = ['opposite', 'adjacent', 'hypotenuse'];
+            const givenSide = sideOptions[randomInt(0, 2)];
+            const remainingSides = sideOptions.filter(s => s !== givenSide);
+            const findSide = remainingSides[randomInt(0, 1)];
+            
+            // Generate a length for the given side (5 to 30 units)
+            const givenLength = randomFloat(5, 30);
+            
+            // Calculate the missing side using trigonometry
+            let answer;
+            let trigFunction;
+            let hint1, hint2;
+            
+            const angleRad = givenAngle * Math.PI / 180;
+            
+            if (givenSide === 'opposite' && findSide === 'adjacent') {
+                // tan(angle) = opposite/adjacent => adjacent = opposite/tan(angle)
+                answer = givenLength / Math.tan(angleRad);
+                trigFunction = 'tangent';
+                hint1 = `Think about TOA: tan(θ) = Opposite / Adjacent`;
+                hint2 = `Rearrange: Adjacent = Opposite / tan(${givenAngle}°)`;
+            } else if (givenSide === 'opposite' && findSide === 'hypotenuse') {
+                // sin(angle) = opposite/hypotenuse => hypotenuse = opposite/sin(angle)
+                answer = givenLength / Math.sin(angleRad);
+                trigFunction = 'sine';
+                hint1 = `Think about SOH: sin(θ) = Opposite / Hypotenuse`;
+                hint2 = `Rearrange: Hypotenuse = Opposite / sin(${givenAngle}°)`;
+            } else if (givenSide === 'adjacent' && findSide === 'opposite') {
+                // tan(angle) = opposite/adjacent => opposite = adjacent × tan(angle)
+                answer = givenLength * Math.tan(angleRad);
+                trigFunction = 'tangent';
+                hint1 = `Think about TOA: tan(θ) = Opposite / Adjacent`;
+                hint2 = `Rearrange: Opposite = Adjacent × tan(${givenAngle}°)`;
+            } else if (givenSide === 'adjacent' && findSide === 'hypotenuse') {
+                // cos(angle) = adjacent/hypotenuse => hypotenuse = adjacent/cos(angle)
+                answer = givenLength / Math.cos(angleRad);
+                trigFunction = 'cosine';
+                hint1 = `Think about CAH: cos(θ) = Adjacent / Hypotenuse`;
+                hint2 = `Rearrange: Hypotenuse = Adjacent / cos(${givenAngle}°)`;
+            } else if (givenSide === 'hypotenuse' && findSide === 'opposite') {
+                // sin(angle) = opposite/hypotenuse => opposite = hypotenuse × sin(angle)
+                answer = givenLength * Math.sin(angleRad);
+                trigFunction = 'sine';
+                hint1 = `Think about SOH: sin(θ) = Opposite / Hypotenuse`;
+                hint2 = `Rearrange: Opposite = Hypotenuse × sin(${givenAngle}°)`;
+            } else if (givenSide === 'hypotenuse' && findSide === 'adjacent') {
+                // cos(angle) = adjacent/hypotenuse => adjacent = hypotenuse × cos(angle)
+                answer = givenLength * Math.cos(angleRad);
+                trigFunction = 'cosine';
+                hint1 = `Think about CAH: cos(θ) = Adjacent / Hypotenuse`;
+                hint2 = `Rearrange: Adjacent = Hypotenuse × cos(${givenAngle}°)`;
+            }
+            
+            // Compute all three sides for correct triangle scaling
+            let opp_fs, adj_fs, hyp_fs;
+            if (givenSide === 'opposite') {
+                opp_fs = givenLength;
+                adj_fs = opp_fs / Math.tan(angleRad);
+                hyp_fs = opp_fs / Math.sin(angleRad);
+            } else if (givenSide === 'adjacent') {
+                adj_fs = givenLength;
+                opp_fs = adj_fs * Math.tan(angleRad);
+                hyp_fs = adj_fs / Math.cos(angleRad);
+            } else { // hypotenuse
+                hyp_fs = givenLength;
+                opp_fs = hyp_fs * Math.sin(angleRad);
+                adj_fs = hyp_fs * Math.cos(angleRad);
+            }
+
+            return {
+                type: 'findSide',
+                givenAngle: givenAngle,
+                givenSide: givenSide,
+                givenLength: givenLength,
+                findSide: findSide,
+                answer: answer,
+                trigFunction: trigFunction,
+                unit: 'cm',
+                hint1: hint1,
+                hint2: hint2,
+                opposite: opp_fs,
+                adjacent: adj_fs,
+                hypotenuse: hyp_fs
+            };
+        }
+        
+        /**
+         * Generate a question where student finds a missing angle
+         * Given: two sides
+         * Find: one angle (not the right angle)
+         */
+        function generateFindAngleQuestion() {
+            // Choose which two sides are given
+            const sideOptions = ['opposite', 'adjacent', 'hypotenuse'];
+            const side1Index = randomInt(0, 2);
+            let side2Index;
+            do { side2Index = randomInt(0, 2); } while (side2Index === side1Index);
+            const side1 = sideOptions[side1Index];
+            const side2 = sideOptions[side2Index];
+
+            // Generate the angle FIRST, then derive all sides from a valid hypotenuse.
+            // This guarantees hypotenuse > opposite and hypotenuse > adjacent (no NaN).
+            const angle = randomInt(20, 70); // degrees
+            const angleRad = angle * Math.PI / 180;
+            const hyp = randomFloat(10, 30);
+            const opp = parseFloat((hyp * Math.sin(angleRad)).toFixed(4));
+            const adj = parseFloat((hyp * Math.cos(angleRad)).toFixed(4));
+
+            const sideLengths = { opposite: opp, adjacent: adj, hypotenuse: hyp };
+            const length1 = sideLengths[side1];
+            const length2 = sideLengths[side2];
+
+            // Calculate the answer using inverse trig
+            let answer;
+            let trigFunction;
+            let hint1, hint2;
+
+            const sides = [side1, side2].sort();
+
+            if (sides[0] === 'adjacent' && sides[1] === 'opposite') {
+                answer = Math.atan(opp / adj) * 180 / Math.PI;
+                trigFunction = 'tangent';
+                hint1 = `Think about TOA: tan(θ) = Opposite / Adjacent`;
+                hint2 = `Use inverse tan: θ = tan⁻¹(Opposite / Adjacent)`;
+            } else if (sides[0] === 'adjacent' && sides[1] === 'hypotenuse') {
+                answer = Math.acos(adj / hyp) * 180 / Math.PI;
+                trigFunction = 'cosine';
+                hint1 = `Think about CAH: cos(θ) = Adjacent / Hypotenuse`;
+                hint2 = `Use inverse cos: θ = cos⁻¹(Adjacent / Hypotenuse)`;
+            } else { // opposite and hypotenuse
+                answer = Math.asin(opp / hyp) * 180 / Math.PI;
+                trigFunction = 'sine';
+                hint1 = `Think about SOH: sin(θ) = Opposite / Hypotenuse`;
+                hint2 = `Use inverse sin: θ = sin⁻¹(Opposite / Hypotenuse)`;
+            }
+
+            return {
+                type: 'findAngle',
+                side1: side1,
+                length1: length1,
+                side2: side2,
+                length2: length2,
+                opposite: opp,
+                adjacent: adj,
+                hypotenuse: hyp,
+                answer: answer,
+                trigFunction: trigFunction,
+                unit: '°',
+                hint1: hint1,
+                hint2: hint2
+            };
+        }
+        
+        // ===== DRAWING FUNCTIONS =====
+        
+        /**
+         * Draw the triangle and question on the canvas
+         */
+        function drawTriangle(question) {
+            const canvas = document.getElementById('triangleCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Use the actual computed side lengths to scale the triangle correctly
+            const actualAdj = question.adjacent;
+            const actualOpp = question.opposite;
+
+            // Scale to fit within the canvas drawing area
+            const padding = 80;
+            const maxBase = canvas.width - 2 * padding;
+            const maxHeight = canvas.height - 2 * padding;
+            const scale = Math.min(maxBase / actualAdj, maxHeight / actualOpp);
+
+            const baseLength = actualAdj * scale;
+            const heightLength = actualOpp * scale;
+            
+            // Points: A (bottom-left, right angle), B (bottom-right), C (top-left)
+            const A = { x: padding, y: canvas.height - padding };
+            const B = { x: A.x + baseLength, y: A.y };
+            const C = { x: A.x, y: A.y - heightLength };
+            
+            // Draw the triangle
+            ctx.strokeStyle = '#004E89';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(A.x, A.y);
+            ctx.lineTo(B.x, B.y);
+            ctx.lineTo(C.x, C.y);
+            ctx.closePath();
+            ctx.stroke();
+            
+            // Draw right angle marker at A
+            const rightAngleSize = 20;
+            ctx.strokeStyle = '#FF6B35';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(A.x, A.y - rightAngleSize, rightAngleSize, rightAngleSize);
+            
+            // Determine which angle we're working with based on the question
+            // For this setup: angle at B is our angle of interest
+            // Side AB is adjacent, side AC is opposite, side BC is hypotenuse
+            
+            if (question.type === 'findSide') {
+                // Draw the given angle at B
+                drawAngleArc(ctx, B, A, C, question.givenAngle, '#F7B801');
+                
+                // Hypotenuse label offset: perpendicular to BC, away from A
+                const hypMid = midpoint(B, C);
+                const hDx = C.x - B.x, hDy = C.y - B.y;
+                const hLen = Math.sqrt(hDx*hDx + hDy*hDy);
+                const perpX = -hDy / hLen, perpY = hDx / hLen;
+                const hypLabelPos = { x: hypMid.x + perpX * 32, y: hypMid.y + perpY * 32 };
+
+                // Label the sides
+                const sideLabels = {
+                    adjacent: { pos: midpoint(A, B), offset: { x: 0, y: 25 } },
+                    opposite: { pos: midpoint(A, C), offset: { x: -45, y: 0 } },
+                    hypotenuse: { pos: hypLabelPos, offset: { x: 0, y: 0 } }
+                };
+                
+                // Draw the given length
+                const givenPos = sideLabels[question.givenSide].pos;
+                const givenOffset = sideLabels[question.givenSide].offset;
+                drawLabel(ctx, `${question.givenLength.toFixed(1)} cm`, 
+                         givenPos.x + givenOffset.x, givenPos.y + givenOffset.y, '#06D6A0', true);
+                
+                // Draw question mark for unknown side
+                const findPos = sideLabels[question.findSide].pos;
+                const findOffset = sideLabels[question.findSide].offset;
+                drawLabel(ctx, '?', findPos.x + findOffset.x, findPos.y + findOffset.y, '#FF6B35', true);
+                
+            } else { // findAngle
+                // Draw question mark for unknown angle at B
+                drawAngleArc(ctx, B, A, C, 30, '#FF6B35', '?');
+                
+                // Hypotenuse label offset: perpendicular to BC, away from A
+                const hypMid2 = midpoint(B, C);
+                const hDx2 = C.x - B.x, hDy2 = C.y - B.y;
+                const hLen2 = Math.sqrt(hDx2*hDx2 + hDy2*hDy2);
+                const perpX2 = -hDy2 / hLen2, perpY2 = hDx2 / hLen2;
+                const hypLabelPos2 = { x: hypMid2.x + perpX2 * 32, y: hypMid2.y + perpY2 * 32 };
+
+                // Label the two given sides
+                const sideLabels = {
+                    adjacent: { pos: midpoint(A, B), offset: { x: 0, y: 25 } },
+                    opposite: { pos: midpoint(A, C), offset: { x: -45, y: 0 } },
+                    hypotenuse: { pos: hypLabelPos2, offset: { x: 0, y: 0 } }
+                };
+                
+                const side1Pos = sideLabels[question.side1].pos;
+                const side1Offset = sideLabels[question.side1].offset;
+                drawLabel(ctx, `${question.length1.toFixed(1)} cm`, 
+                         side1Pos.x + side1Offset.x, side1Pos.y + side1Offset.y, '#06D6A0', true);
+                
+                const side2Pos = sideLabels[question.side2].pos;
+                const side2Offset = sideLabels[question.side2].offset;
+                drawLabel(ctx, `${question.length2.toFixed(1)} cm`, 
+                         side2Pos.x + side2Offset.x, side2Pos.y + side2Offset.y, '#06D6A0', true);
+            }
+        }
+        
+        /**
+         * Draw an angle arc at a vertex
+         * CRITICAL: This function draws the arc correctly for the angle at vertex
+         * vertex: the point where the angle is
+         * point1, point2: the two points that form the angle
+         * displayAngle: the angle value to display (optional)
+         * color: the color of the arc
+         * label: optional label to show (like '?' or the angle value)
+         */
+        function drawAngleArc(ctx, vertex, point1, point2, displayAngle, color, label) {
+            const radius = 35;
+            
+            // Calculate angles from vertex to both points
+            const angle1 = Math.atan2(point1.y - vertex.y, point1.x - vertex.x);
+            const angle2 = Math.atan2(point2.y - vertex.y, point2.x - vertex.x);
+            
+            // Draw arc INSIDE the angle at the vertex.
+            // In canvas, ctx.arc draws clockwise when anticlockwise=false.
+            // The interior arc is the short arc; we go clockwise from angle1 to angle2.
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(vertex.x, vertex.y, radius, angle1, angle2, false); // false = clockwise = interior arc
+            ctx.stroke();
+            
+            // Add label if provided
+            // Midpoint of the clockwise arc from angle1 to angle2:
+            // normalise angle2 so it is >= angle1 (clockwise direction = increasing angle)
+            if (label || displayAngle) {
+                let a2 = angle2;
+                while (a2 < angle1) a2 += 2 * Math.PI;
+                const midAngle = angle1 + (a2 - angle1) / 2;
+                const labelRadius = radius + 20;
+                const labelX = vertex.x + Math.cos(midAngle) * labelRadius;
+                const labelY = vertex.y + Math.sin(midAngle) * labelRadius;
+                
+                const text = label || `${displayAngle}°`;
+                drawLabel(ctx, text, labelX, labelY, color, true);
+            }
+        }
+        
+        /**
+         * Helper function to find midpoint between two points
+         */
+        function midpoint(p1, p2) {
+            return {
+                x: (p1.x + p2.x) / 2,
+                y: (p1.y + p2.y) / 2
+            };
+        }
+        
+        /**
+         * Draw a label on the canvas
+         */
+        function drawLabel(ctx, text, x, y, color, bold = false) {
+            ctx.font = bold ? 'bold 20px "Fredoka"' : '18px "Fredoka"';
+            ctx.fillStyle = color;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, x, y);
+        }
+        
+        // ===== GAME FLOW FUNCTIONS =====
+        
+        /**
+         * Start the game
+         */
+        function startGame() {
+            // Reset game state
+            gameState.score = 0;
+            gameState.questionsAttempted = 0;
+            gameState.correctAnswers = 0;
+            gameState.timeLeft = 900; // 15 minutes
+            
+            // Update UI
+            document.getElementById('scoreValue').textContent = '0';
+            
+            // Show game screen
+            showScreen('gameScreen');
+            
+            // Start timer
+            startTimer();
+            
+            // Generate first question
+            nextQuestion();
+        }
+        
+        /**
+         * Start the countdown timer
+         */
+        function startTimer() {
+            updateTimerDisplay();
+            
+            gameState.timerInterval = setInterval(() => {
+                gameState.timeLeft--;
+                updateTimerDisplay();
+                
+                // Check if time's up
+                if (gameState.timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+        
+        /**
+         * Update the timer display
+         */
+        function updateTimerDisplay() {
+            const minutes = Math.floor(gameState.timeLeft / 60);
+            const seconds = gameState.timeLeft % 60;
+            const timerElement = document.getElementById('timer');
+            timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Add warning class if less than 1 minute
+            if (gameState.timeLeft < 60) {
+                timerElement.classList.add('warning');
+            } else {
+                timerElement.classList.remove('warning');
+            }
+        }
+        
+        /**
+         * Generate and display the next question
+         */
+        function nextQuestion() {
+            // Generate question
+            gameState.currentQuestion = generateQuestion();
+            gameState.attemptsLeft = 3;
+            gameState.questionsAttempted++;
+            
+            // Draw triangle
+            drawTriangle(gameState.currentQuestion);
+            
+            // Update question text
+            const questionText = document.getElementById('questionText');
+            if (gameState.currentQuestion.type === 'findSide') {
+                const sideName = gameState.currentQuestion.findSide.charAt(0).toUpperCase() + 
+                                gameState.currentQuestion.findSide.slice(1);
+                questionText.textContent = `Find the length of the ${sideName.toLowerCase()} side.`;
+            } else {
+                questionText.textContent = `Find the angle θ (theta).`;
+            }
+            
+            // Set unit label
+            document.getElementById('unitLabel').textContent = gameState.currentQuestion.unit;
+            
+            // Reset input and feedback
+            document.getElementById('answerInput').value = '';
+            document.getElementById('answerInput').disabled = false;
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('attemptsInfo').textContent = '';
+            
+            // Show submit button, hide next button
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'none';
+            
+            // Focus input
+            document.getElementById('answerInput').focus();
+        }
+        
+        /**
+         * Check the user's answer
+         */
+        function checkAnswer() {
+            const userInput = document.getElementById('answerInput').value.trim();
+            const userAnswer = parseFloat(userInput);
+            
+            // Validate input
+            if (isNaN(userAnswer)) {
+                showFeedback('Please enter a valid number.', 'error');
+                return;
+            }
+            
+            const correctAnswer = gameState.currentQuestion.answer;
+            
+            // Check if answer is correct
+            if (isAnswerCorrect(userAnswer, correctAnswer)) {
+                // Correct answer!
+                gameState.score++;
+                gameState.correctAnswers++;
+                document.getElementById('scoreValue').textContent = gameState.score;
+                
+                showFeedback(`✓ Correct! The answer is ${correctAnswer.toFixed(2)}${gameState.currentQuestion.unit}`, 'success');
+                
+                // Disable input and show next button
+                document.getElementById('answerInput').disabled = true;
+                document.getElementById('submitBtn').style.display = 'none';
+                document.getElementById('nextBtn').style.display = 'block';
+                document.getElementById('nextBtn').focus();
+                
+            } else {
+                // Wrong answer
+                gameState.attemptsLeft--;
+                
+                if (gameState.attemptsLeft > 0) {
+                    // Show hint
+                    const hint = gameState.attemptsLeft === 2 ? 
+                                gameState.currentQuestion.hint1 : 
+                                gameState.currentQuestion.hint2;
+                    
+                    showFeedback(`✗ Not quite. ${hint}`, 'hint');
+                    document.getElementById('attemptsInfo').textContent = 
+                        `${gameState.attemptsLeft} attempt${gameState.attemptsLeft > 1 ? 's' : ''} remaining`;
+                    
+                    // Focus input for next attempt
+                    document.getElementById('answerInput').focus();
+                    document.getElementById('answerInput').select();
+                    
+                } else {
+                    // No attempts left
+                    showFeedback(`✗ The correct answer was ${correctAnswer.toFixed(2)}${gameState.currentQuestion.unit}`, 'error');
+                    
+                    // Disable input and show next button
+                    document.getElementById('answerInput').disabled = true;
+                    document.getElementById('submitBtn').style.display = 'none';
+                    document.getElementById('nextBtn').style.display = 'block';
+                    document.getElementById('attemptsInfo').textContent = '';
+                    document.getElementById('nextBtn').focus();
+                }
+            }
+        }
+        
+        /**
+         * Show feedback to the user
+         */
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = `feedback ${type}`;
+        }
+        
+        /**
+         * End the game
+         */
+        function endGame() {
+            // Stop timer
+            clearInterval(gameState.timerInterval);
+            
+            // Calculate stats
+            const accuracy = gameState.questionsAttempted > 0 ? 
+                           Math.round((gameState.correctAnswers / gameState.questionsAttempted) * 100) : 0;
+            
+            // Update end screen
+            document.getElementById('finalScore').textContent = gameState.score;
+            document.getElementById('questionsAttempted').textContent = gameState.questionsAttempted;
+            document.getElementById('correctAnswers').textContent = gameState.correctAnswers;
+            document.getElementById('accuracy').textContent = `${accuracy}%`;
+            
+            // Show end screen
+            showScreen('endScreen');
+        }
+        
+        /**
+         * Reset and restart the game
+         */
+        function resetGame() {
+            showScreen('introScreen');
+        }
+        
+        /**
+         * Show a specific screen
+         */
+        function showScreen(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Show requested screen
+            document.getElementById(screenId).classList.add('active');
+        }
+        
+        // ===== EVENT LISTENERS =====
+        
+        // Handle Enter key in input field
+        document.getElementById('answerInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                if (document.getElementById('submitBtn').style.display !== 'none') {
+                    checkAnswer();
+                } else if (document.getElementById('nextBtn').style.display !== 'none') {
+                    nextQuestion();
+                }
+            }
+        });
+        
+        // Also allow Enter to trigger next button when it has focus
+        document.getElementById('nextBtn').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                nextQuestion();
+            }
+        });
+    </script>
+</body>
+</html>
